@@ -7,10 +7,19 @@ import IngredientList from './IngredientList';
 function Ingredients() {
   const [userIngredients, setUserIngredients] = useState([]);
   const addIngredientHandler = ingredient => {
-    setUserIngredients(prevIngredients=>[
-      ...prevIngredients,
-      {id: Math.random().toString(), ...ingredient}
-    ])
+    fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json', {
+      method: 'POST',
+      body: JSON.stringify(ingredient),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(response => {
+      return response.json();
+    }).then(responseData => {
+      setUserIngredients(prevIngredients => [
+        ...prevIngredients,
+        { id: responseData.name, ...ingredient }
+      ])
+    })
+    
   }
   return (
     <div className="App">
@@ -18,7 +27,7 @@ function Ingredients() {
 
       <section>
         <Search />
-        <IngredientList ingredients={userIngredients} onRemoveItem={()=>{}}/>
+        <IngredientList ingredients={userIngredients} onRemoveItem={() => { }} />
       </section>
     </div>
   );
