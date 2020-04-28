@@ -19,7 +19,9 @@ function Ingredients() {
         { id: responseData.name, ...ingredient }
       ])
     })
-    
+  }
+  const removeItemHandler = (id) => {
+    setUserIngredients(prevIngredients => prevIngredients.filter((userIngredient) => userIngredient.id !== id));
   }
   return (
     <div className="App">
@@ -27,7 +29,7 @@ function Ingredients() {
 
       <section>
         <Search />
-        <IngredientList ingredients={userIngredients} onRemoveItem={() => { }} />
+        <IngredientList ingredients={userIngredients} onRemoveItem={removeItemHandler} />
       </section>
     </div>
   );
