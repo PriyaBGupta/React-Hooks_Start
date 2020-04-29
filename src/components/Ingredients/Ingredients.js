@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -6,6 +6,23 @@ import IngredientList from './IngredientList';
 
 function Ingredients() {
   const [userIngredients, setUserIngredients] = useState([]);
+  useEffect(()=>{
+    fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json')
+    .then(response=> response.json())
+    .then(responseData =>{
+      console.log(responseData);
+      const loadedIngredients = [];
+      for(const key in responseData){
+        loadedIngredients.push({
+          id: key,
+          title: responseData[key].title,
+          amount: responseData[key].amount
+        })
+      }
+      console.log(loadedIngredients);
+      setUserIngredients(loadedIngredients);
+    })
+  },[]);
   const addIngredientHandler = ingredient => {
     fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json', {
       method: 'POST',
