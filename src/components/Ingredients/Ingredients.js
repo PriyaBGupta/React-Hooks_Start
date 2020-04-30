@@ -21,8 +21,12 @@ function Ingredients() {
     })
   }
   const removeItemHandler = (id) => {
+    fetch(`https://react-hooks-update-1c67d.firebaseio.com/ingredients/${id}.json`, {
+      method: 'DELETE'
+  }).then(responseData => {
     setUserIngredients(prevIngredients => prevIngredients.filter((userIngredient) => userIngredient.id !== id));
-  }
+  })
+}
   //onLoadIngredients is getting called hassetUserIngredients and
   // therefore the whole app is getting rendered again and again and
   // also filteredIngredientsHandler is function which is created unique everytime
