@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -6,23 +6,6 @@ import IngredientList from './IngredientList';
 
 function Ingredients() {
   const [userIngredients, setUserIngredients] = useState([]);
-  useEffect(()=>{
-    fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json')
-    .then(response=> response.json())
-    .then(responseData =>{
-      console.log(responseData);
-      const loadedIngredients = [];
-      for(const key in responseData){
-        loadedIngredients.push({
-          id: key,
-          title: responseData[key].title,
-          amount: responseData[key].amount
-        })
-      }
-      console.log(loadedIngredients);
-      setUserIngredients(loadedIngredients);
-    })
-  },[]);
   const addIngredientHandler = ingredient => {
     fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json', {
       method: 'POST',
@@ -40,9 +23,13 @@ function Ingredients() {
   const removeItemHandler = (id) => {
     setUserIngredients(prevIngredients => prevIngredients.filter((userIngredient) => userIngredient.id !== id));
   }
-  const filteredIngredientsHandler = (filteredIngredients) => {
+  //onLoadIngredients is getting called hassetUserIngredients and
+  // therefore the whole app is getting rendered again and again and
+  // also filteredIngredientsHandler is function which is created unique everytime
+  //useCallback will call thid funtion only once ref lec437
+  const filteredIngredientsHandler = useCallback(filteredIngredients => {
     setUserIngredients(filteredIngredients);
-  }
+  },[]);
   return (
     <div className="App">
       <IngredientForm onAddIngredient={addIngredientHandler} />
