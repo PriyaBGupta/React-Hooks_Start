@@ -17,7 +17,7 @@ const Search = React.memo(props => {
     //return statement executes at start of useEffect call and not at end of first useEffect call
     const timer = setTimeout(() => {
       if (enteredFilter === inputRef.current.value) {
-        const query = enteredFilter.length === 0 ? '' : `orderBy="title"&equalTo="${enteredFilter}`;
+        const query = enteredFilter.length === 0 ? '' : `?orderBy="title"&equalTo="${enteredFilter}"`;
         fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json' + query)
           .then(response => response.json())
           .then(responseData => {
