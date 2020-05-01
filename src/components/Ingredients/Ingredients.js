@@ -54,8 +54,8 @@ function Ingredients() {
     });
   }
   const removeItemHandler = (id) => {
-    dispatchHttp({type:'SEND'});
-    fetch(`https://react-hooks-update-1c67d.firebaseio.com/ingredients/${id}.jso`, {
+    dispatchHttp({ type: 'SEND' });
+    fetch(`https://react-hooks-update-1c67d.firebaseio.com/ingredients/${id}.json`, {
       method: 'DELETE'
     }).then(responseData => {
       dispatchHttp({ type: 'RESPONSE' });
