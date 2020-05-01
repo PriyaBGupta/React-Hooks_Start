@@ -55,13 +55,15 @@ function Ingredients() {
   }
   const removeItemHandler = (id) => {
     dispatchHttp({type:'SEND'});
-    fetch(`https://react-hooks-update-1c67d.firebaseio.com/ingredients/${id}.json`, {
+    fetch(`https://react-hooks-update-1c67d.firebaseio.com/ingredients/${id}.jso`, {
       method: 'DELETE'
     }).then(responseData => {
       dispatchHttp({ type: 'RESPONSE' });
       //setUserIngredients(prevIngredients => prevIngredients.filter((userIngredient) => userIngredient.id !== id));
       dispatch({ type: 'DELETE', id: id });
-    })
+    }).catch(error => {
+      dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong' });
+    });
   }
   //onLoadIngredients is getting called hassetUserIngredients and
   // therefore the whole app is getting rendered again and again and
