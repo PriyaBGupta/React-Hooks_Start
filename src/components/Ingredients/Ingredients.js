@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useReducer , useMemo } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -37,7 +37,8 @@ function Ingredients() {
   //we should consider reducer also for piece of code where two sattes are changing like loading and error
   const [userIngredients, dispatch] = useReducer(ingredientReducer, []);
   const [httpRequest, dispatchHttp] = useReducer(httpReducer, { loading: false, error: false });
-  const addIngredientHandler = ingredient => {
+
+  const addIngredientHandler = useCallback(ingredient => {
     dispatchHttp({ type: 'SEND' });
     fetch('https://react-hooks-update-1c67d.firebaseio.com/ingredients.json', {
       method: 'POST',
@@ -47,13 +48,20 @@ function Ingredients() {
       return response.json();
     }).then(responseData => {
       dispatchHttp({ type: 'RESPONSE' })
-      //we didnt have get caal after adding
+      //we didnt have get call after adding
+      ingredient = {
+        ...ingredient,
+        id: responseData.name
+      }
       dispatch({ type: 'ADD', ingredient: ingredient });
     }).catch(error => {
       dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong' });
     });
-  }
-  const removeItemHandler = (id) => {
+    // we define dependency of variable which can call this function 
+    //So dispatchHttp cannot change because it is function
+  },[])
+
+  const removeItemHandler = useCallback(id => {
     dispatchHttp({ type: 'SEND' });
     fetch(`https://react-hooks-update-1c67d.firebaseio.com/ingredients/${id}.json`, {
       method: 'DELETE'
@@ -64,7 +72,7 @@ function Ingredients() {
     }).catch(error => {
       dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong' });
     });
-  }
+  },[]);
   //onLoadIngredients is getting called hassetUserIngredients and
   // therefore the whole app is getting rendered again and again and
   // also filteredIngredientsHandler is function which is created unique everytime
@@ -72,9 +80,18 @@ function Ingredients() {
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
     dispatch({ type: 'SET', ingredients: filteredIngredients });
   }, []);
-  const clearErrorMessage = () => {
+  const clearErrorMessage = useCallback(() => {
     dispatchHttp({ type: 'CLEAR' })
-  }
+  },[]);
+  const ingredientList = useMemo(()=>{
+    return <IngredientList 
+    ingredients={userIngredients}
+    onRemoveItem={removeItemHandler}/>
+  },[userIngredients, removeItemHandler])
+  //this memo needs to run again when userIngredients has been created 
+  //remove ItemHandler is the funcgiona nd it wont change
+  //Memo is used so that we do not recreate when whole compoennt render
+  // to avoid rendering i=in virtual dom and not in real dom
   return (
     <div className="App">
       {httpRequest.error && <ErrorModal onClose={clearErrorMessage}>{httpRequest.error}</ErrorModal>}
@@ -82,8 +99,7 @@ function Ingredients() {
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList ingredients={userIngredients}
-          onRemoveItem={removeItemHandler} />
+        {ingredientList}
       </section>
     </div>
   );
